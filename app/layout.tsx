@@ -1,16 +1,18 @@
-import { Geist, Geist_Mono, Source_Sans_3 } from "next/font/google"
+import { Inter } from "next/font/google"
 
 import "./globals.css"
+
 import { ThemeProvider } from "@/components/theme-provider"
-import { cn } from "@/lib/utils";
+import { LayoutProvider } from "@/contexts/layout-context"
+import { TooltipProvider } from "@/components/ui/tooltip"
+import { cn } from "@/lib/utils"
+import { LocaleProvider } from "@/lib/i18n/locale-provider"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
-const sourceSans3Heading = Source_Sans_3({subsets:['latin'],variable:'--font-heading'});
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans'})
-
-const fontMono = Geist_Mono({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-mono",
+  variable: "--font-sans",
+  display: "swap",
 })
 
 export default function RootLayout({
@@ -19,14 +21,23 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", geist.variable, sourceSans3Heading.variable)}
-    >
-      <body>
-        <ThemeProvider>{children}</ThemeProvider>
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body
+        className={cn(
+          inter.variable,
+          "font-sans antialiased"
+        )}
+      >
+        <ThemeProvider>
+          <LayoutProvider>
+            <TooltipProvider>
+              <LocaleProvider>{children}</LocaleProvider>
+            </TooltipProvider>
+          </LayoutProvider>
+        </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   )
 }
+

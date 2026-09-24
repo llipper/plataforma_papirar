@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create, update: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly([
+          'displayName', 'bio', 'phone', 'career', 'instagram', 'tiktok',
+          'visibility', 'updatedAt'
+        ])
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() >= 2
+        && request.resource.data.displayName.size() <= 80
+        && request.resource.data.bio is string
+        && request.resource.data.bio.size() <= 500
+        && request.resource.data.phone is string
+        && request.resource.data.phone.size() <= 30
+        && request.resource.data.career is string
+        && request.resource.data.career.size() <= 100
+        && request.resource.data.instagram is string
+        && request.resource.data.instagram.size() <= 80
+        && request.resource.data.tiktok is string
+        && request.resource.data.tiktok.size() <= 80
+        && request.resource.data.visibility in ['private', 'basic', 'public'];
+      allow delete: if false;
+    }
+  }
+}

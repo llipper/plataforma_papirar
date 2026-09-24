@@ -1,0 +1,28 @@
+FROM node:22-alpine AS base
+
+FROM base AS deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+
+FROM deps AS builder
+WORKDIR /app
+COPY tsconfig.json ./tsconfig.json
+COPY services/api/src/infrastructure/retry.ts ./services/api/src/infrastructure/retry.ts
+COPY services/worker/tsconfig.json ./services/worker/tsconfig.json
+COPY services/worker/src ./services/worker/src
+RUN ./node_modules/.bin/tsc -p services/worker/tsconfig.json
+
+FROM base AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+
+RUN addgroup --system --gid 1001 nodejs \
+  && adduser --system --uid 1001 papirar
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=builder /app/services/worker/dist ./services/worker/dist
+
+USER papirar
+
+CMD ["node", "services/worker/dist/worker/src/worker.js"]

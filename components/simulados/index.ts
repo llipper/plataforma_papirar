@@ -1,0 +1,6 @@
+export * from "./simulado-card"
+export * from "./simulado-cover"
+export * from "./simulado-grid"
+export * from "./simulado-answer-sheet"
+export * from "./simulado-question-card"
+export * from "./simulado-runner"

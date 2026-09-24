@@ -1,0 +1,12 @@
+node_modules
+.next
+out
+coverage
+.git
+.env
+papirar-infra/.env
+firebase-config
+*.tsbuildinfo
+Dockerfile
+docker-compose*.yml
+compose*.yml
